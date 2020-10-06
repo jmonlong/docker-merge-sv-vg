@@ -25,8 +25,8 @@ for line in fileinput.input():
     if(len(line_prev) > 0 and
        line_prev[0] == line[0] and
        line_prev[1] == line[1] and
-       line_prev[3] == line[3] and
-       line_prev[4] == line[4]):
+       line_prev[3].upper() == line[3].upper() and
+       line_prev[4].upper() == line[4].upper()):
         # exact match chr+pos+ref+alt
         # extract FORMAT and genotypes
         ft_prev = line_prev[8].split(':')
