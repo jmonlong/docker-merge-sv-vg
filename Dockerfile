@@ -9,6 +9,7 @@ ENV DEBCONF_NONINTERACTIVE_SEEN true
 RUN apt-get update \
         && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         git screen time less nano wget gcc make bzip2 \
+        parallel \
         python3 \
         python3-pip \
         python3-setuptools \
