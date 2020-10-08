@@ -13,10 +13,14 @@ import sys
 # either merge with the current line if exact het match
 # or print and update with current line
 line_prev = []
+samp_name = ''
 for line in fileinput.input():
     line = line.rstrip()
     # if header, print and skip
     if line[0] == '#':
+        line_v = line.split('\t')
+        if line_v[0] == '#CHROM':
+            samp_name = line_v[9]
         print(line)
         continue
     # if not, parse the VCF record
@@ -49,7 +53,9 @@ for line in fileinput.input():
             print('\t'.join(line))
             line_prev = []
         else:
-            sys.exit("Exact match but both are not hets!")
+            err_msg = '{}: {} vs {}'.format(samp_name, gt_prev, gt)
+            err_msg += ' Exact match but both are not hets!'
+            sys.exit(err_msg)
     elif len(line_prev) > 0:
         # different variants, print buffer
         # and update with current line
