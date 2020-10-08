@@ -13,7 +13,7 @@ parser.add_argument('-l', default='none', help='log level')
 parser.add_argument('-m', default=30, help='min SV size')
 args = parser.parse_args()
 
-ref_fa = Fasta(args.f)
+ref_fa = Fasta(args.f, build_index=False)
 
 aligner = Align.PairwiseAligner()
 aligner.gap_score = -5
