@@ -33,9 +33,11 @@ for line in fileinput.input():
        line_prev[4].upper() == line[4].upper()):
         # exact match chr+pos+ref+alt
         # extract FORMAT and genotypes
+        sv_id_prev = line_prev[2]
         ft_prev = line_prev[8].split(':')
         samp_prev = line_prev[9].split(':')
         gt_prev = samp_prev[ft_prev.index('GT')]
+        sv_id = line[2]
         ft = line[8].split(':')
         samp = line[9].split(':')
         gt = samp[ft.index('GT')]
@@ -52,8 +54,30 @@ for line in fileinput.input():
             # print line and init line_prev
             print('\t'.join(line))
             line_prev = []
+        elif sv_id_prev != sv_id:
+            # conflict but from different snarls:
+            # keep the most confident call
+            filter = line[6]
+            filter_prev = line_prev[6]
+            if filter == 'PASS' and filter_prev != 'PASS':
+                print('\t'.join(line))
+            elif filter != 'PASS' and filter_prev == 'PASS':
+                print('\t'.join(line_prev))
+            else:
+                # if both have the same FILTER field use GQ
+                gq = gq_prev = 0
+                if 'GQ' in ft:
+                    gq_prev = int(samp_prev[ft_prev.index('GQ')])
+                    gq = int(samp[ft.index('GQ')])
+                if gq > gq_prev:
+                    print('\t'.join(line))
+                else:
+                    print('\t'.join(line_prev))
+            line_prev = []
         else:
-            err_msg = '{}: {} vs {}'.format(samp_name, gt_prev, gt)
+            # conflict and from the same snarl: problem
+            err_msg = '{} {} {}: {} vs {}'.format(line[0], line[1],
+                                                  samp_name, gt_prev, gt)
             err_msg += ' Exact match but both are not hets!'
             sys.exit(err_msg)
     elif len(line_prev) > 0:
