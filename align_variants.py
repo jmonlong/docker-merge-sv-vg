@@ -18,7 +18,7 @@ ref_fa = Fasta(args.f, build_index=False)
 aligner = Align.PairwiseAligner()
 aligner.gap_score = -5
 aligner.extend_gap_score = 0
-# aligner.match_score = 1
+aligner.match_score = 1
 aligner.mismatch_score = -1
 # aligner.end_gap_score = -10
 # aligner.end_extend_gap_score = -1000
@@ -271,6 +271,7 @@ for record in vcf_reader:
     seq_ref = Seq(str(record.REF))
     seq_alt = Seq(str(record.ALT[0]))
     if len(seq_ref) < min_sv_size or len(seq_alt) < min_sv_size:
+        vcf_writer.write_record(record)
         continue
     if log in ['var', 'all']:
         print('{}\tref: {}, alt: {}'.format(record.ID,
